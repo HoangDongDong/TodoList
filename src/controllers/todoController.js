@@ -9,6 +9,7 @@ exports.renderTodoList = async (req, res) => {
       todos,
       currentStatus: status || "all",
       currentSearch: search || "",
+      currentUrl: req.originalUrl,
       error: req.query.error || null,
     });
   } catch (err) {
@@ -52,7 +53,7 @@ exports.toggleTodo = async (req, res) => {
 
     // Đảo ngược trạng thái completed (0 thành 1, hoặc 1 thành 0 trong MySQL)
     await todoModel.update(id, { completed: !todo.completed });
-    res.redirect("back");
+    res.redirect("/");
   } catch (err) {
     console.error("Lỗi cập nhật trạng thái:", err);
     res.redirect(
@@ -93,16 +94,16 @@ exports.editTodo = async (req, res) => {
 exports.deleteTodo = async (req, res) => {
   try {
     const { id } = req.params;
+    const returnTo = getSafeReturnTo(req);
     const success = await todoModel.delete(id);
 
     if (!success) {
       return res.redirect(
-        "/?error=" +
-          encodeURIComponent("Không thể xóa. Công việc không tồn tại!"),
+        `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=${encodeURIComponent("Không thể xóa. Công việc không tồn tại!")}`,
       );
     }
 
-    res.redirect("back");
+    res.redirect(returnTo);
   } catch (err) {
     console.error("Lỗi xóa công việc:", err);
     res.redirect(

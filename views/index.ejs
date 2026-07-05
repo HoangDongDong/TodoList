@@ -56,6 +56,7 @@
                     <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
                         <!-- Checkbox Đánh dấu hoàn thành -->
                         <form action="/toggle/<%= todo.id %>" method="POST" style="margin: 0;">
+                            <input type="hidden" name="returnTo" value="<%= typeof currentUrl !== 'undefined' ? currentUrl : '/' %>">
                             <input type="checkbox" <%= todo.completed ? 'checked' : '' %> onChange="this.form.submit()">
                         </form>
 
@@ -78,6 +79,10 @@
     </div>
 
     <script>
+        document.querySelectorAll('input[name="returnTo"]').forEach(input => {
+            input.value = window.location.pathname + window.location.search;
+        });
+
         function editPrompt(id, oldTitle) {
             const newTitle = prompt("Chỉnh sửa tên công việc:", oldTitle);
             if (newTitle !== null && newTitle.trim() !== "") {
