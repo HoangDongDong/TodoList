@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý công việc (Todo List)</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; background-color: #f9f9f9; }
+        .error { color: red; background: #ffe6e6; padding: 10px; border-radius: 4px; margin-bottom: 10px; }
+        .filters { margin: 15px 0; display: flex; gap: 10px; align-items: center; }
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: white; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .todo-item.completed span { text-decoration: line-line-through; color: #888; text-decoration: line-through; }
+        .actions { display: flex; gap: 5px; }
+        .btn-link { background: none; border: none; color: blue; cursor: pointer; text-decoration: underline; padding: 0; }
+        .btn-danger { color: red; }
+    </style>
+</head>
+<body>
+
+    <h1>📝 Danh sách công việc</h1>
+
+    <!-- Hiển thị thông báo lỗi nếu dữ liệu không hợp lệ -->
+    <% if (error) { %>
+        <div class="error"><%= error %></div>
+    <% } %>
+
+    <!-- Form tìm kiếm -->
+    <form action="/" method="GET" style="display: flex; gap: 5px; margin-bottom: 15px;">
+        <input type="text" name="search" placeholder="Tìm kiếm công việc..." value="<%= currentSearch %>" style="flex: 1; padding: 8px;">
+        <input type="hidden" name="status" value="<%= currentStatus %>">
+        <button type="submit">Tìm</button>
+        <% if (currentSearch) { %> <a href="/?status=<%= currentStatus %>">Xóa tìm kiếm</a> <% } %>
+    </form>
+
+    <!-- Form thêm mới -->
+    <form action="/add" method="POST" style="display: flex; gap: 5px;">
+        <input type="text" name="title" placeholder="Nhập công việc mới..." style="flex: 1; padding: 8px;" required>
+        <button type="submit" style="padding: 8px 15px;">Thêm</button>
+    </form>
+
+    <!-- Thanh Lọc Trạng Thái -->
+    <div class="filters">
+        <span>Lọc:</span>
+        <a href="/?status=all&search=<%= currentSearch %>" style="<%= currentStatus === 'all' ? 'font-weight: bold;' : '' %>">Tất cả</a> |
+        <a href="/?status=active&search=<%= currentSearch %>" style="<%= currentStatus === 'active' ? 'font-weight: bold;' : '' %>">Chưa xong</a> |
+        <a href="/?status=completed&search=<%= currentSearch %>" style="<%= currentStatus === 'completed' ? 'font-weight: bold;' : '' %>">Đã xong</a>
+    </div>
+
+    <!-- Danh sách hiển thị -->
+    <div id="todo-list">
+        <% if (todos.length === 0) { %>
+            <p style="color: #666; font-style: italic;">Không có công việc nào.</p>
+        <% } else { %>
+            <% todos.forEach(todo => { %>
+                <div class="todo-item <%= todo.completed ? 'completed' : '' %>">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                        <!-- Checkbox Đánh dấu hoàn thành -->
+                        <form action="/toggle/<%= todo.id %>" method="POST" style="margin: 0;">
+                            <input type="checkbox" <%= todo.completed ? 'checked' : '' %> onChange="this.form.submit()">
+                        </form>
+
+                        <!-- Tên công việc (Bấm vào nút Sửa sẽ prompt để đổi tên) -->
+                        <span id="title-<%= todo.id %>"><%= todo.title %></span>
+                    </div>
+
+                    <div class="actions">
+                        <!-- Nút Sửa -->
+                        <button class="btn-link" onclick="editPrompt('<%= todo.id %>', '<%= todo.title %>')">Sửa</button>
+                        
+                        <!-- Form Xóa -->
+                        <form action="/delete/<%= todo.id %>" method="POST" style="margin: 0;" onsubmit="return confirm('Bạn chắc chắn muốn xóa?')">
+                            <button type="submit" class="btn-link btn-danger">Xóa</button>
+                        </form>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+
+    <script>
+        function editPrompt(id, oldTitle) {
+            const newTitle = prompt("Chỉnh sửa tên công việc:", oldTitle);
+            if (newTitle !== null && newTitle.trim() !== "") {
+                // Tạo nhanh một form ẩn để submit dữ liệu chỉnh sửa lên server
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/edit/${id}`;
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'title';
+                input.value = newTitle;
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            } else if (newTitle !== null) {
+                alert("Tên công việc không được để trống!");
+            }
+        }
+    </script>
+</body>
+</html>
