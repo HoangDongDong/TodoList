@@ -1,4 +1,4 @@
-const todoModel = require("../models/todoModel");
+const todoModel = require("../models/TodoModel");
 
 function getSafeReturnTo(req) {
   const { returnTo } = req.body || {};
