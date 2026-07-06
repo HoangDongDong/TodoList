@@ -2,11 +2,6 @@
 
 Ứng dụng quản lý công việc đơn giản dùng **Node.js**, **Express**, **EJS** và **MySQL**.
 
-## Yêu cầu
-
-- Node.js 18+ (khuyến nghị)
-- MySQL 8+ hoặc MariaDB tương thích
-
 ## Cài đặt
 
 1. Cài dependencies:
@@ -15,14 +10,14 @@
 npm install
 ```
 
-2. Tạo file `.env` ở thư mục gốc và khai báo thông tin kết nối database:
+2. Tạo file `.env` ở thư mục gốc và khai báo thông tin kết nối database(trong project đã có sẵn):
 
 ```env
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=todolist
-PORT=3000
+PORT=3001
 ```
 
 3. Tạo database và bảng `todos`:
@@ -47,7 +42,7 @@ npm start
 Mặc định ứng dụng sẽ chạy tại:
 
 ```text
-http://localhost:3000
+http://localhost:3001
 ```
 
 ## Chức năng
@@ -71,8 +66,3 @@ src/
 views/
   index.ejs
 ```
-
-## Ghi chú
-
-- Ứng dụng dùng `dotenv` để đọc biến môi trường.
-- Nếu chưa kết nối được MySQL, hãy kiểm tra lại thông tin trong file `.env` và quyền truy cập database.
