@@ -1,5 +1,21 @@
 const todoModel = require("../models/todoModel");
 
+function getSafeReturnTo(req) {
+  const { returnTo } = req.body || {};
+
+  if (typeof returnTo !== "string" || returnTo.trim() === "") {
+    return "/";
+  }
+
+  const trimmed = returnTo.trim();
+
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+    return trimmed;
+  }
+
+  return "/";
+}
+
 exports.renderTodoList = async (req, res) => {
   try {
     const { status, search } = req.query;

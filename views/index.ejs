@@ -70,6 +70,7 @@
                         
                         <!-- Form Xóa -->
                         <form action="/delete/<%= todo.id %>" method="POST" style="margin: 0;" onsubmit="return confirm('Bạn chắc chắn muốn xóa?')">
+                            <input type="hidden" name="returnTo" value="<%= typeof currentUrl !== 'undefined' ? currentUrl : '/' %>">
                             <button type="submit" class="btn-link btn-danger">Xóa</button>
                         </form>
                     </div>
